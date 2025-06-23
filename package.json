@@ -1,0 +1,32 @@
+{
+  "name": "oxylabs-ai-studio-mcp",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "mcp",
+    "oxylabs",
+    "ai",
+    "studio"
+  ],
+  "author": "Oxylabs",
+  "license": "MIT",
+  "description": "Oxylabs AI Studio MCP Server",
+  "type": "module",
+  "bin": {
+    "oxylabs-ai-studio-mcp": "./server.js"
+  },
+  "dependencies": {
+    "fastmcp": "^3.3.1",
+    "oxylabs-ai-studio": "^1.0.8",
+    "zod": "^3.25.67"
+  },
+  "files": [
+    "server.js"
+  ],
+  "devDependencies": {
+    "eslint": "^9.29.0",
+    "eslint-js": "github:eslint/js"
+  }
+}
