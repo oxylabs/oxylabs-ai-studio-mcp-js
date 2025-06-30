@@ -1,6 +1,6 @@
 {
   "name": "oxylabs-ai-studio-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "lint": "eslint ."
   },
@@ -8,7 +8,16 @@
     "mcp",
     "oxylabs",
     "ai",
-    "studio"
+    "studio",
+    "ai-studio",
+    "scraping",
+    "ai-scrape",
+    "ai-crawl",
+    "ai-browser-agent",
+    "crawl",
+    "scrape",
+    "browser",
+    "search"
   ],
   "author": "Oxylabs",
   "license": "MIT",
@@ -19,7 +28,7 @@
   },
   "dependencies": {
     "fastmcp": "^3.3.1",
-    "oxylabs-ai-studio": "^1.0.10",
+    "oxylabs-ai-studio": "^1.0.11",
     "zod": "^3.25.67"
   },
   "files": [

@@ -35,17 +35,17 @@ server.addTool({
   description: "Generates json schema in openapi format from provided prompt.",
   parameters: z.object({
     user_prompt: z.string(),
-    app_name: z.enum(["ai_crawl", "ai_scrape", "browser_agent"]),
+    app_name: z.enum(["ai_crawler", "ai_scraper", "browser_agent"]),
   }),
   execute: async (args) => {
-    if (args.app_name === 'ai_scrape') {
-      const response = await sdk.aiScrape.generateSchema({ user_prompt: args.user_prompt });
+    if (args.app_name === 'ai_scraper') {
+      const response = await sdk.aiScraper.generateSchema({ user_prompt: args.user_prompt });
       return JSON.stringify(response);
-    } else if (args.app_name === 'ai_crawl') {
-      const response = await sdk.aiCrawl.generateSchema({ user_prompt: args.user_prompt });
+    } else if (args.app_name === 'ai_crawler') {
+      const response = await sdk.aiCrawler.generateSchema({ user_prompt: args.user_prompt });
       return JSON.stringify(response);
     } else if (args.app_name === 'browser_agent') {
-      const response = await sdk.aiBrowse.generateSchema({ user_prompt: args.user_prompt });
+      const response = await sdk.browserAgent.generateSchema({ user_prompt: args.user_prompt });
       return JSON.stringify(response);
     } else {
       throw new Error(`Invalid app name ${args.app_name}`);
@@ -55,7 +55,7 @@ server.addTool({
 
 
 server.addTool({
-  name: "ai_scrape",
+  name: "ai_scraper",
   description: `
 Scrape the contents of the web page and return the data in the specified format.
 Schema is required only if output_format is json.
@@ -84,10 +84,10 @@ Parameters:
         openapi_schema: args.schema, 
         render_html: args.render_javascript };
       if (args.output_format === 'json' && !args.schema) {
-        const response = await sdk.aiScrape.scrapeWithAutoSchema(payload);
+        const response = await sdk.aiScraper.scrapeWithAutoSchema(payload);
         return JSON.stringify({ content: response.data });
       }
-      const response = await sdk.aiScrape.scrape(payload);
+      const response = await sdk.aiScraper.scrape(payload);
       return JSON.stringify({ content: response.data });
     } catch (error) {
       console.error(error);
@@ -97,7 +97,7 @@ Parameters:
 });
 
 server.addTool({
-  name: "ai_crawl",
+  name: "ai_crawler",
   description: `
 Tool useful for crawling a website from starting url and returning data in a specified format.
 Schema is required only if output_format is json.
@@ -130,7 +130,7 @@ Parameters:
           render_html: args.render_javascript,
           max_pages: args.return_sources_limit,
         }
-        const response = await sdk.aiCrawl.crawlWithAutoSchema(payload);
+        const response = await sdk.aiCrawler.crawlWithAutoSchema(payload);
         return JSON.stringify({ content: response.data });
       }
       const payload = { 
@@ -140,7 +140,7 @@ Parameters:
         openapi_schema: args.schema,
         render_html: args.render_javascript, 
         max_pages: args.return_sources_limit };
-      const response = await sdk.aiCrawl.crawl(payload);
+      const response = await sdk.aiCrawler.crawl(payload);
       return JSON.stringify({ content: response.data });
     } catch (error) {
       console.error(error);
@@ -150,7 +150,7 @@ Parameters:
 });
 
 server.addTool({
-  name: "ai_browser_agent",
+  name: "browser_agent",
   description: `
 Run the browser agent and return the data in the specified format.
 This tool is useful if you need navigate around the website and do some actions.
@@ -179,15 +179,15 @@ Parameters:
           output_format: args.output_format,
           parse_prompt: args.browse_prompt,
           openapi_schema: args.schema };
-        const response = await sdk.aiBrowse.browseWithAutoSchema(payload, 240000);
+        const response = await sdk.browserAgent.browseWithAutoSchema(payload, 240000);
         return JSON.stringify({ content: response.data });
       }
       const payload = { 
         url: args.url, 
         browse_prompt: args.browse_prompt, 
         output_format: args.output_format,
-         openapi_schema: args.schema };
-      const response = await sdk.aiBrowse.browse(payload, 240000);
+        openapi_schema: args.schema };
+      const response = await sdk.browserAgent.browse(payload, 240000);
       return JSON.stringify({ content: response.data });
     } catch (error) {
       console.error(error);
