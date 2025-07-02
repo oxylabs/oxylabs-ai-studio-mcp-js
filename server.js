@@ -8,7 +8,7 @@ import {
 
 
 const api_key = process.env.OXYLABS_AI_STUDIO_API_KEY;
-const api_url = process.env.OXYLABS_AI_STUDIO_API_URL || 'https://api-aistudio.oxylabs.io/v1';
+const api_url = process.env.OXYLABS_AI_STUDIO_API_URL || 'https://api-aistudio.oxylabs.io';
 
 
 if (!api_key) {
