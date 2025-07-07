@@ -131,7 +131,7 @@ Parameters:
           parse_prompt: args.parse_prompt,
           output_format: args.output_format,
           render_javascript: args.render_javascript,
-          render_sources_limit: args.return_sources_limit,
+          return_sources_limit: args.return_sources_limit,
         }
         const response = await sdk.aiCrawler.crawlWithAutoSchema(payload);
         return JSON.stringify({ content: response.data });
@@ -142,7 +142,7 @@ Parameters:
         output_format: args.output_format, 
         schema: args.schema,
         render_javascript: args.render_javascript, 
-        render_sources_limit: args.return_sources_limit };
+        return_sources_limit: args.return_sources_limit };
       const response = await sdk.aiCrawler.crawl(payload);
       return JSON.stringify({ content: response.data });
     } catch (error) {
@@ -159,11 +159,12 @@ Run the browser agent and return the data in the specified format.
 This tool is useful if you need navigate around the website and do some actions.
 It allows navigating to any url, clicking on links, filling forms, scrolling, etc.
 Finally it returns the data in the specified format. Schema is required only if output_format is json.
-'browse_prompt' describes what browser agent should achieve.
+'user_prompt' describes what browser agent should achieve.
 
 Parameters:
   - url: The URL to start the browser agent navigation from.
-  - browse_prompt: What browser agent should do.
+  - user_prompt: What browser agent should do.
+  - parse_prompt: What information user wants to extract from the page.
   - output_format: The output format. Screenshot is base64 encoded jpeg image. Markdown returns full text of the page including links. If json, the schema is required.
   - schema: The schema in openapi format to use for the browser agent. Only required if 'output_format' is json.
 `,
@@ -181,7 +182,6 @@ Parameters:
           url: args.url,  
           output_format: args.output_format,
           parse_prompt: args.parse_prompt,
-          schema: args.schema 
         };
         const response = await sdk.browserAgent.browseWithAutoSchema(payload, 240000);
         return JSON.stringify({ content: response.data });
