@@ -81,8 +81,8 @@ Parameters:
         url: args.url, 
         output_format: args.output_format, 
         user_prompt: args.user_prompt,
-        openapi_schema: args.schema, 
-        render_html: args.render_javascript };
+        schema: args.schema, 
+        render_javascript: args.render_javascript };
       if (args.output_format === 'json' && !args.schema) {
         const response = await sdk.aiScraper.scrapeWithAutoSchema(payload);
         return JSON.stringify({ content: response.data });
@@ -106,7 +106,8 @@ Schema is required only if output_format is json.
 
 Parameters:
   - url: The URL from which crawling will be started.
-  - crawl_prompt: What information user wants to extract from the domain.
+  - user_prompt: What information user wants to extract from the domain.
+  - parse_prompt: What information user wants to extract from the page.
   - output_format: The format of the output. Json or Markdown. If json, the schema is required. Markdown returns full text of the page.
   - schema: The schema to use for the crawl. Only required if 'output_format' is json. In openapi format.
   - render_javascript: Whether to render the HTML of the page using javascript. Much slower, therefore use it only for websites that require javascript to render the page. Unless user asks to use it, first try to crawl the page without it. If results are unsatisfactory, try to use it.
@@ -114,7 +115,8 @@ Parameters:
 `,
   parameters: z.object({
     url: z.string().url(),
-    crawl_prompt: z.string(),
+    user_prompt: z.string(),
+    parse_prompt: z.string(),
     output_format: z.enum(["json", "markdown"]),
     schema: z.record(z.any()).optional().nullable().default(null),
     render_javascript: z.boolean().default(false).optional(),
@@ -125,21 +127,22 @@ Parameters:
       if (args.output_format === 'json' && !args.schema) {
         const payload = {
           url: args.url,
-          crawl_prompt: args.crawl_prompt,
+          user_prompt: args.user_prompt,
+          parse_prompt: args.parse_prompt,
           output_format: args.output_format,
-          render_html: args.render_javascript,
-          max_pages: args.return_sources_limit,
+          render_javascript: args.render_javascript,
+          return_sources_limit: args.return_sources_limit,
         }
         const response = await sdk.aiCrawler.crawlWithAutoSchema(payload);
         return JSON.stringify({ content: response.data });
       }
       const payload = { 
         url: args.url, 
-        crawl_prompt: args.crawl_prompt, 
+        user_prompt: args.user_prompt,
         output_format: args.output_format, 
-        openapi_schema: args.schema,
-        render_html: args.render_javascript, 
-        max_pages: args.return_sources_limit };
+        schema: args.schema,
+        render_javascript: args.render_javascript, 
+        return_sources_limit: args.return_sources_limit };
       const response = await sdk.aiCrawler.crawl(payload);
       return JSON.stringify({ content: response.data });
     } catch (error) {
@@ -156,17 +159,19 @@ Run the browser agent and return the data in the specified format.
 This tool is useful if you need navigate around the website and do some actions.
 It allows navigating to any url, clicking on links, filling forms, scrolling, etc.
 Finally it returns the data in the specified format. Schema is required only if output_format is json.
-'browse_prompt' describes what browser agent should achieve.
+'user_prompt' describes what browser agent should achieve.
 
 Parameters:
   - url: The URL to start the browser agent navigation from.
-  - browse_prompt: What browser agent should do.
+  - user_prompt: What browser agent should do.
+  - parse_prompt: What information user wants to extract from the page.
   - output_format: The output format. Screenshot is base64 encoded jpeg image. Markdown returns full text of the page including links. If json, the schema is required.
   - schema: The schema in openapi format to use for the browser agent. Only required if 'output_format' is json.
 `,
   parameters: z.object({
     url: z.string().url(),
-    browse_prompt: z.string(),
+    user_prompt: z.string(),
+    parse_prompt: z.string(),
     output_format: z.enum(["json", "markdown", "html", "screenshot"]),
     schema: z.record(z.any()).optional().nullable(),
   }),
@@ -174,19 +179,18 @@ Parameters:
     try {
       if (args.output_format === 'json' && !args.schema) {
         const payload = { 
-          url: args.url, 
-          browse_prompt: args.browse_prompt, 
+          url: args.url,  
           output_format: args.output_format,
-          parse_prompt: args.browse_prompt,
-          openapi_schema: args.schema };
+          parse_prompt: args.parse_prompt,
+        };
         const response = await sdk.browserAgent.browseWithAutoSchema(payload, 240000);
         return JSON.stringify({ content: response.data });
       }
       const payload = { 
         url: args.url, 
-        browse_prompt: args.browse_prompt, 
+        user_prompt: args.user_prompt, 
         output_format: args.output_format,
-        openapi_schema: args.schema };
+        schema: args.schema };
       const response = await sdk.browserAgent.browse(payload, 240000);
       return JSON.stringify({ content: response.data });
     } catch (error) {
