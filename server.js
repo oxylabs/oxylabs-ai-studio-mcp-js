@@ -58,20 +58,20 @@ server.addTool({
   name: "ai_scraper",
   description: `
 Scrape the contents of the web page and return the data in the specified format.
-Schema is required only if output_format is json.
+Schema is required only if output_format is json. Set output_format to 'markdown' by default. Use 'json' only if the user explicitly requests it.
 'render_javascript' is used to render javascript heavy websites.
 
 Parameters:
   - url: The URL to scrape.
   - output_format: The format of the output. If json, the schema is required. Markdown returns full text of the page.
-  - user_prompt: What user wants to extract from the page. Optional, only used if output_format is json and no schema is provided.
+  - parse_prompt: What user wants to extract from the page. Optional, only used if output_format is json and no schema is provided.
   - schema: The schema to use for the scrape. Only required if output_format is json. In openapi format.
   - render_javascript: Whether to render the HTML of the page using javascript. Much slower, therefore use it only for websites that require javascript to render the page. Unless user asks to use it, first try to scrape the page without it. If results are unsatisfactory, try to use it.
 `,
   parameters: z.object({
     url: z.string().url(),
-    output_format: z.enum(["json", "markdown"]),
-    user_prompt: z.string().optional(),
+    output_format: z.enum(["json", "markdown"]).default("markdown"),
+    parse_prompt: z.string().optional(),
     schema: z.record(z.any()).optional().nullable().default(null),
     render_javascript: z.boolean().default(false).optional(),
   }),
@@ -80,7 +80,7 @@ Parameters:
       const payload = { 
         url: args.url, 
         output_format: args.output_format, 
-        user_prompt: args.user_prompt,
+        parse_prompt: args.parse_prompt,
         schema: args.schema, 
         render_javascript: args.render_javascript };
       if (args.output_format === 'json' && !args.schema) {
@@ -100,14 +100,14 @@ server.addTool({
   name: "ai_crawler",
   description: `
 Tool useful for crawling a website from starting url and returning data in a specified format.
-Schema is required only if output_format is json.
+Schema is required only if output_format is json. Set output_format to 'markdown' by default. Use 'json' only if the user explicitly requests it.
 'render_javascript' is used to render javascript heavy websites.
 'return_sources_limit' is used to limit the number of sources to return, for example if you expect results from single source, you can set it to 1.
 
 Parameters:
   - url: The URL from which crawling will be started.
-  - user_prompt: What information user wants to extract from the domain.
-  - parse_prompt: What information user wants to extract from the page.
+  - user_prompt: Describes what information the user wants to discover by crawling the website.
+  - parse_prompt: What information user wants to extract from each page.
   - output_format: The format of the output. Json or Markdown. If json, the schema is required. Markdown returns full text of the page.
   - schema: The schema to use for the crawl. Only required if 'output_format' is json. In openapi format.
   - render_javascript: Whether to render the HTML of the page using javascript. Much slower, therefore use it only for websites that require javascript to render the page. Unless user asks to use it, first try to crawl the page without it. If results are unsatisfactory, try to use it.
@@ -117,7 +117,7 @@ Parameters:
     url: z.string().url(),
     user_prompt: z.string(),
     parse_prompt: z.string(),
-    output_format: z.enum(["json", "markdown"]),
+    output_format: z.enum(["json", "markdown"]).default("markdown"),
     schema: z.record(z.any()).optional().nullable().default(null),
     render_javascript: z.boolean().default(false).optional(),
     return_sources_limit: z.number().optional(),
@@ -181,6 +181,7 @@ Parameters:
         const payload = { 
           url: args.url,  
           output_format: args.output_format,
+          user_prompt: args.user_prompt,
           parse_prompt: args.parse_prompt,
         };
         const response = await sdk.browserAgent.browseWithAutoSchema(payload, 240000);
